@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Monoton:wght@200;300;400;500;600;700;800&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  list-style: none;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --primary-color: #c36434;
+    --error-color: #ac2828;
+    --gray-color: #747474;
+}
+
+.full-height-layout {
+  height: 100vh;
+}
+
+.sider-logo {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  margin-top: 5px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: '20px';
+}
+
+.menu-bar {  
+  display: flex;
+  flex-direction: column;
+  font-size: 0.80rem;
+  position: relative;
+  margin-top: 0;
+  background-color: var(--primary-color);  
+}
+
+.tela-manutencao{
+  text-align: center;
+  color: var(--primary-color);
+}
+
+/* Define a transição e a rotação para o ícone SVG dentro do botão */
+.rotate-icon:hover svg{
+  transform: rotate(360deg); /* Define o ângulo de rotação */
+  transition: transform 0.5s ease-out; /* Adiciona uma transição suave */
+}
+
+/* Opcional: Estilo padrão quando não está rotacionando, garantindo uma transição suave no retorno */
+.rotate-icon:not(.rotate-icon) svg {
+  transform: rotate(0deg);
+  transition: transform 0.5s ease-out;
+}
+
+.bordered-container{
+  border: 1px solid var(--primary-color);  
+  margin-bottom: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;  
+}
