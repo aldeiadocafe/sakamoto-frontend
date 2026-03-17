@@ -1,7 +1,7 @@
 import Title from 'antd/es/typography/Title'
 import { useEffect, useRef, useState }  from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { AutoComplete, Button, Grid, Card, Checkbox,Popconfirm, DatePicker, Form, Input, InputNumber, message, Row, Space, Spin, Table, Modal } from 'antd';
+import { AutoComplete, Button, Grid, Card, Checkbox, Popconfirm, DatePicker, Form, Input, InputNumber, message, Row, Space, Spin, Table, Modal } from 'antd';
 import { CameraOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
 
@@ -317,9 +317,10 @@ const ItemConfComponent = () => {
 
     }
 
-    const carregarCount = () => {
+    const carregarCount = async() => {
 
-        setLoading(true);        
+        setLoading(true);     
+        setDados([])   
         getAllByPlaces(placesId).then((response) => {
 
             const dados = response.data.map((count) => ({
@@ -375,6 +376,35 @@ const ItemConfComponent = () => {
         } else {
             focusDescricao()
         }
+
+    }
+
+    const validateDataValidade = (_, value) => {
+
+        if (!value) return Promise.resolve(); // Permite que a validação de campo obrigatório trate a ausência de valor
+
+        return new Promise((resolve, reject) => {
+
+            //Verifica se a data é anterio a hoje
+            if (value.isBefore(dayjs().startOf('day'))) {
+    //            return Promise.reject(new Error('A data não pode ser anterior a hoje!'));
+                Modal.confirm(
+                    {
+                        title: 'Data de Validade Vencida',
+                        content: 'A data de validade informada é anterior a hoje. Deseja continuar?',
+                        onOk: () => { resolve()},
+                        onCancel: () => {
+                            reject();
+//                            formCountPlaces.resetFields(['dataValidade'])
+                        }
+                    })
+
+            } else {
+                resolve();
+            }
+
+
+        })
 
     }
 
@@ -517,7 +547,7 @@ const ItemConfComponent = () => {
                 layout='horizontal'
                 size='small'
                 onFinish={onFinishFormItems}
-                onFinishFailed={onFinishFailedFormItems}
+//                onFinishFailed={onFinishFailedFormItems}
             >
                 <Item
                     name={"_id"}
@@ -603,8 +633,12 @@ const ItemConfComponent = () => {
                             name={"dataValidade"}
                             label="Dt Validade"
                             required
+                            validateTrigger={['onBluir']}
                             rules={[{required: true, 
-                                    message: 'Informar Data de Validade'}]}
+                                    message: 'Informar Data de Validade'},
+                                    {validator: validateDataValidade}
+                                    ]}
+                            
                             >
                                 <DatePicker 
                                     placeholder='Dt Validade'
@@ -623,8 +657,15 @@ const ItemConfComponent = () => {
                     name={"quantidade"}
                     label="Quantidade"
                     required
-                    rules={[{required: true, 
-                            message: 'Quantidade'}]}
+                    rules={[
+                        {required: true},
+                        {
+                            validator: (_, value) => 
+                                value > 0 
+                                ? Promise.resolve()
+                                : Promise.reject(new Error('A quantidade deve ser maior que zero')),                                    
+                        }
+                        ]}
                 >
                     <InputNumber
                         style={{ width: 140 }}
@@ -637,11 +678,11 @@ const ItemConfComponent = () => {
 
                 <Item>
                     <Space>
-                        <Button type="primary" htmlType="submit">
-                            Gravar
-                        </Button>
                         <Button onClick={handleVoltar}>
                             Cancelar
+                        </Button>
+                        <Button type="primary" htmlType="submit">
+                            Gravar
                         </Button>
                         <Checkbox
                             onChange={()=> {setCardCount(!cardCount)}}

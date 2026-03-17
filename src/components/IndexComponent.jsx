@@ -188,6 +188,15 @@ const IndexComponent = () => {
         showSorterTooltip: { target: 'sorter-icon' }, 
         render: (value) => formatter.format(value),
     },
+    {
+        title: 'GCom - Estoq', 
+        dataIndex: 'diferenca', 
+        key: 'diferenca',
+        align: 'right',
+        sorter: (a, b) => a.diferenca - b.diferenca,
+        showSorterTooltip: { target: 'sorter-icon' }, 
+        render: (value) => formatter.format(value),
+    },
   ];
 
   const carregarDados = async () => {
@@ -213,7 +222,8 @@ const IndexComponent = () => {
           descricao:    item.item.descricao,
           unidade:      (unit.find(unit => unit._id === item.item.unit).unidade),
           quantidade:   item.quantidade,
-          gcomEstoque:  item.gcomEstoque
+          gcomEstoque:  item.gcomEstoque,
+          diferenca:    item.gcomEstoque - item.quantidade
         }))
 
         setDadosGCom(dados)
@@ -246,47 +256,54 @@ const IndexComponent = () => {
           const hoje = dayjs(new Date().toISOString().split('T')[0])
 
           const dataAux = [
-            { dias: '5 dias',  total: 0 },
-            { dias: '10 dias', total: 0 },
-            { dias: '15 dias', total: 0 },
-            { dias: '20 dias', total: 0 },
-            { dias: '25 dias', total: 0 },
-            { dias: '30 dias', total: 0 },
+            { dias: 'Vencidos',  total: 0 },
+            { dias: '5 dias',    total: 0 },
+            { dias: '10 dias',   total: 0 },
+            { dias: '15 dias',   total: 0 },
+            { dias: '20 dias',   total: 0 },
+            { dias: '25 dias',   total: 0 },
+            { dias: '30 dias',   total: 0 },
           ];
           
-          // 5 dias
+          // Vencidos
           dataAux[0].total = dados
                         .filter(item => (
-                          dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day')) <= 4 
+                          dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day')) <= 0 
                         )
                         .reduce((sum, item) => sum + item.quantidade, 0)
 
-          // 10 dias
+          // 5 dias
           dataAux[1].total = dados
+                        .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 0)
+                        .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 4)
+                        .reduce((sum, item) => sum + item.quantidade, 0)
+
+          // 10 dias
+          dataAux[2].total = dados
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 4)
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 9)
                         .reduce((sum, item) => sum + item.quantidade, 0)
 
           // 15 dias
-          dataAux[2].total = dados
+          dataAux[3].total = dados
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 9)
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 14)
                         .reduce((sum, item) => sum + item.quantidade, 0)
 
           // 20 dias
-          dataAux[3].total = dados
+          dataAux[4].total = dados
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 14)
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 19)
                         .reduce((sum, item) => sum + item.quantidade, 0)
 
           // 25 dias
-          dataAux[4].total = dados
+          dataAux[5].total = dados
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 19)
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 24)
                         .reduce((sum, item) => sum + item.quantidade, 0)
 
           // 30 dias
-          dataAux[5].total = dados
+          dataAux[6].total = dados
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') > 24)
                         .filter(item => dayjs(new Date(item.dataValidade).toISOString().split('T')[0]).diff(hoje, 'day') <= 29)
                         .reduce((sum, item) => sum + item.quantidade, 0)
@@ -363,6 +380,7 @@ const IndexComponent = () => {
                   dataSource={dadosGCom}      
                   showSorterTooltip={true}
                   size={'small'}
+                  tableLayout="auto"
                   scroll={{ y: 'calc(50vh - 235px)' }}                
                   rowKey={(record) => record._id}
                   pagination={{

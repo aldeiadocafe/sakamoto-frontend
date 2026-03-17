@@ -22,6 +22,8 @@ const ListStockBalanceComponent = () => {
     const [dados,       setDados]                   = useState([])
     const [expandedDateItem, setExpandedDateItem ]  = useState([])
 
+    const [dadosGCom, setDadosGCom]       = useState([])
+
     // 1. Estado para armazenar as chaves (keys) das linhas expandidas
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
@@ -43,7 +45,9 @@ const ListStockBalanceComponent = () => {
             Item:       item.itCodigo,
             Descrição:  item.descricao,
             Unid:       item.unidade,
-            Quantidade: formatter.format(item.qtde)
+            Quantidade: formatter.format(item.qtde),
+            GCom:       formatter.format(item.gcomEstoque),
+            "GCOM - Qtde":  formatter.format(item.diferenca),
         }))
 
         // Cria worksheet / Converte os dados (JSON) em worksheet
@@ -68,11 +72,19 @@ const ListStockBalanceComponent = () => {
             }
         }
 
+        const rightAlignStyle = {
+        alignment: {
+            horizontal: 'right', // Opções: 'left', 'center', 'right'
+        },
+        };
+
         // Aplicar estilo aos cabeçalhos (A1, B1, C1)
         if (ws['A1']) ws['A1'].s = headerStyle;
         if (ws['B1']) ws['B1'].s = headerStyle;
         if (ws['C1']) ws['C1'].s = headerStyle;
         if (ws['D1']) ws['D1'].s = headerStyle;
+        if (ws['E1']) ws['E1'].s = headerStyle;
+        if (ws['F1']) ws['F1'].s = headerStyle;
 
         // 3. Ajustar largura das colunas
         ws['!cols'] = [
@@ -80,7 +92,24 @@ const ListStockBalanceComponent = () => {
             { wch: 50 }, // Largura da Coluna B
             { wch: 5  }, // Largura da Coluna C
             { wch: 15 }, // Largura da Coluna D
+            { wch: 15 }, // Largura da Coluna E
+            { wch: 15 }, // Largura da Coluna F
+
         ]
+
+        // Obtém o total de linhas (exclui o cabeçalho se json_to_sheet for usado sem customização)
+        // O !ref contém o intervalo, ex: "A1:B3"
+        const range = XLSX.utils.decode_range(ws['!ref']);
+//        const totalLinhas = range.e.r - range.s.r; // range.e.r é a última linha (base 0)  >> range.e.r + 1); // +1 para contar a linha do cabeçalho
+
+        // Exemplo para a coluna B2:B10
+        for (let i = 2; i <= (range.e.r + 1); i++) {
+//            const cellAddress = 'D' + i;
+            if (!ws['D' + i]) continue; // Pular se a célula estiver vazia
+            ws['D' + i].s = rightAlignStyle; // Aplica o estilo
+            ws['E' + i].s = rightAlignStyle; // Aplica o estilo
+            ws['F' + i].s = rightAlignStyle; // Aplica o estilo
+        }
 
         // Cria um novo workbook
         const wb = XLSX.utils.book_new()
@@ -201,6 +230,15 @@ const ListStockBalanceComponent = () => {
         render: (value) => formatter.format(value),
     },
     {
+        title: 'GCom - Estoq', 
+        dataIndex: 'diferenca', 
+        key: 'diferenca',
+        align: 'right',
+        sorter: (a, b) => a.diferenca - b.diferenca,
+        showSorterTooltip: { target: 'sorter-icon' }, 
+        render: (value) => formatter.format(value),
+    },
+    {
         dataIndex:  "dataInventario",
         title:      "Data Inventário",
         sorter: (a, b) => new Date(a.dataInventario).getTime() - new Date(b.dataInventario).getTime(),
@@ -261,6 +299,7 @@ const ListStockBalanceComponent = () => {
             console.error(error);
         });
 
+        setDadosGCom([])
 
         await getAllStockBalances().then(response => {
 
@@ -273,6 +312,7 @@ const ListStockBalanceComponent = () => {
                 unit:           item.item.unit,
                 unidade:        (unit.find(unit => unit._id === item.item.unit).unidade),
                 gcomEstoque:    item.gcomEstoque,
+                diferenca:      item.gcomEstoque - item.quantidade,
                 dataInventario: item.dataInventario
             }))
 

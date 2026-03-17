@@ -110,20 +110,6 @@ const ImportGComEstoqueComponent = () => {
     },
   ];
 
-
-/*
-  const [api, contextHolder]  = notification.useNotification()
-
-  const openNotification = () => {
-    api.open({
-      message: 'Processing Action',
-      description: 'This notification will close automatically with a progress bar.',
-      showProgress: true, // Enables the progress bar
-      duration: 5,        // Duration in seconds
-      pauseOnHover: true, // Optional: pause bar on hover
-    });
-  };
-*/
   // Propriedades de configuração do Upload
   const props = {    
 
@@ -131,7 +117,7 @@ const ImportGComEstoqueComponent = () => {
     multiple: false, // Permitir apenas um arquivo    
     fileList, // 1. Limitar os tipos de arquivo (.xls.xlsx)
     listType: 'picture',
-    accept: '.xls.xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // 2. Validação antes de enviar
+    accept: '.xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // 2. Validação antes de enviar
 
     showUploadList: {
       extra: ({ size = 0 }) => (
@@ -152,13 +138,6 @@ const ImportGComEstoqueComponent = () => {
         return Upload.LIST_IGNORE; // Remove arquivo inválido da lista
       }
 
-/*      
-      const isLt2M = file.size / 1024 / 1024 < 2; // Valida tamanho < 2MB
-      if (!isLt2M) {
-        message.error('O arquivo deve ser menor que 2MB!');
-        return Upload.LIST_IGNORE;
-      }
-*/
       // Se passou na validação, impede o upload automático (retorna false)
       // e adiciona o arquivo à lista localmente
       setBotao(true)
@@ -236,7 +215,7 @@ const ImportGComEstoqueComponent = () => {
 
           return {
             _id:  stock ? stock._id : null,
-            gcomEstoque: item.quantidade
+            gcomEstoque: item.quantidade,
           }
         })
 
@@ -258,7 +237,7 @@ const ImportGComEstoqueComponent = () => {
                 _id:          item._id,
                 itCodigo:     stock.itCodigo,
                 descricao:    stock.descricao,
-                gcomEstoque:  item.gcomEstoque
+                gcomEstoque:  item.gcomEstoque,
               }
 
             })

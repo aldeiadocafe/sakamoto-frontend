@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 
 import { Table, Input, Space, Button, Form, DatePicker, message, Row, Col, Card, Spin, Tooltip } from 'antd'
 
@@ -187,6 +187,50 @@ const ConferenceComponent = () => {
         // Você pode adicionar sua lógica aqui, como navegação ou abrir um modal
 //        alert(`Você clicou na linha de: ${record._id}`);
     };
+
+    const carregarDados = () => {
+
+        setLoading(true);
+
+        getPlacesInventory('?').then((response) => {
+
+            //Retirar Inventario Finalizado
+            const dados = response.data.filter(place => place.situacao != 'FINALIZADO')
+
+            // Ler Array
+            const dadosAux = dados.map(places => ({
+                _id:            places._id,
+                local:          places.local,
+                inventory:      places.inventory,
+                dataInventario: places.inventory.dataInventario,
+                situacao:       places.situacao,
+            }))
+
+            setDados(dadosAux);
+
+        }).catch((error)=> {
+            setDados([])            
+            if (error.response.data.message) {
+                message.error(error.response.data.message)
+            } else {
+                if (error.response) {
+                    message.error(error.response.data || 'Erro no servidor');
+                } else {
+                    message.error('Erro ao finalizar!');
+                }                
+            }
+        });
+
+        setTimeout(() => {
+        setSelectedRowKeys([]);
+        setLoading(false);
+        }, 1000);    
+
+    }
+
+    useEffect(() => {
+        carregarDados()
+    }, [])
 
   return (
     <>
