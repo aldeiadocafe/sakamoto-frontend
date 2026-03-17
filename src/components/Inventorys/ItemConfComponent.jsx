@@ -645,10 +645,7 @@ const ItemConfComponent = () => {
                                     selected={startDate}
                                     ref={refDataValidade}
                                     style={{ width: 140 }}
-                                    format={{
-                                        format: "DD/MM/YYYY",
-                                        type: 'mask',
-                                    }}
+                                    format={"DD/MM/YYYY"}
                                 />
                         </Item>
                     </Space>

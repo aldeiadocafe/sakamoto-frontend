@@ -4,10 +4,8 @@ import logo from '../assets/logo.png'
 const Logo = () => {
   return (
     <div className='logo'>
-        <a href='/'>
-          <img src={logo} 
-            style={{width: '20px'}}/>
-        </a>
+      <img src={logo} 
+        style={{width: '20px'}}/>
     </div>
   )
 }

@@ -58,15 +58,18 @@ function App() {
               onMouseEnter={() => setCollapsed(false)}
               style={{ background: 'var(--primary-color)' /* Sua cor personalizada */ }}
               >
-              <div className='sider-logo'>          
-                <Button
-                  type='text'
-                  className='toogle'
-                  onClick={() => setCollapsed(!collapsed)}
-                  >
-                    <Logo/>
-                  </Button>
-              </div>
+              <a href='/'>
+                <div className='sider-logo'>
+                  <Button
+                    type='text'
+                    className='toogle'
+                    width='100%'
+                    onClick={() => setCollapsed(!collapsed)}
+                    >
+                      <Logo/>
+                    </Button>
+                </div>
+              </a>
               <MenuList/>
             </Sider>
             <Content

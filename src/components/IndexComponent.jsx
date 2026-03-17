@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Column } from '@ant-design/plots'
-import { Button, Card, Col, Input, Layout, Row, Space, Table } from 'antd'
+import { Button, Card, Grid, Col, Input, Layout, Row, Space, Table } from 'antd'
 import { Content } from 'antd/es/layout/layout'
 
 import { getAllDatesItem } from '../services/DatesItemBalanceService'
@@ -12,6 +12,8 @@ import { SearchOutlined } from '@ant-design/icons'
 import { getAllStockBalances } from '../services/StockBalanceService'
 
 dayjs.extend(utc)
+
+const { useBreakpoint } = Grid;
 
 const IndexComponent = () => {
 
@@ -32,6 +34,16 @@ const IndexComponent = () => {
       style: 'decimal',
       minimumFractionDigits: 3,
   });
+
+  const screens = useBreakpoint();
+
+  // Define a altura baseada no breakpoint xs
+  const plotHeight = screens.xs ? 120 : 150;
+  const gcomHeight = screens.xs ? 120 : 93;
+  const validadeHeight = screens.xs ? 120 : 215;
+
+    // Define a altura baseada se é xs ou menor
+  const cardBarra = screens.xs ? '135px' : '180px';
 
   const handleReset = (clearFilters, confirm) => {
       clearFilters();
@@ -256,7 +268,7 @@ const IndexComponent = () => {
           const hoje = dayjs(new Date().toISOString().split('T')[0])
 
           const dataAux = [
-            { dias: 'Vencidos',  total: 0 },
+            { dias: 'Venc',  total: 0 },
             { dias: '5 dias',    total: 0 },
             { dias: '10 dias',   total: 0 },
             { dias: '15 dias',   total: 0 },
@@ -341,7 +353,7 @@ const IndexComponent = () => {
         fill: '#f7f5f5',
       },
     },
-    height: 180, // Optional: set a fixed height
+    height: plotHeight, // Optional: set a fixed height
     // Opcional: animação ao carregar
     animation: {
       appear: {
@@ -360,29 +372,46 @@ const IndexComponent = () => {
   return (
     <Layout >      
       <Content style={{ margin: '10px'}}>
-        <Row gutter={16}>
 
-          <Col span={8}>
+
+        <Row gutter={[16, 16]}>
+
+          {/* xs={24} para celular (1 card por linha) */}
+          {/* md={12} para desktop (2 cards por linha) */}
+          <Col 
+            xs={24}
+            md={8}
+            span={8}
+            >
             <Card
               title="Total de Produtos à Vencer"
+              bodyStyle={{ 
+                  height: cardBarra,
+                  overflow: 'hidden' 
+                }}
             >
               <Column {...config} />
             </Card>
           </Col>
 
-          <Col span={16}>
+          <Col 
+            xs={24}
+            md={16}
+            span={16}
+            >
             <Card
               title="Aldeia X GCom"
             >
-
               <Table
                   columns={colunasGCom}
                   dataSource={dadosGCom}      
                   showSorterTooltip={true}
                   size={'small'}
                   tableLayout="auto"
-                  scroll={{ y: 'calc(50vh - 235px)' }}                
+                  scroll={{ y: gcomHeight}}                
                   rowKey={(record) => record._id}
+                  pagination={false}
+/*                  
                   pagination={{
                       tabela,
                       // The available options for items per page
@@ -398,6 +427,7 @@ const IndexComponent = () => {
                       setTabela(page);
                       },
                   }}        
+*/                      
               />
 
             </Card>
@@ -414,24 +444,9 @@ const IndexComponent = () => {
               showSorterTooltip={true}
               size={'small'}
               tableLayout="auto"
-              scroll={{ y: 'calc(17vh)' }}                
-//              scroll={{ y: 110 }}                
+              scroll={{ y: validadeHeight }}                
               rowKey={(record) => record._id}
-              pagination={{
-                  tabela,
-                  // The available options for items per page
-                  pageSizeOptions: ['5', '10', '20', '30'], 
-                  // Display the size changer
-                  showSizeChanger: true, 
-                  // Set the default page size
-          //        defaultPageSize: 5,
-                  // Optional: show total items count
-                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-                  // Optional: update tabela page state on change
-                  onChange: (page) => {
-                  setTabela(page);
-                  },
-              }}        
+              pagination={false}
           />
 
         </Card>
