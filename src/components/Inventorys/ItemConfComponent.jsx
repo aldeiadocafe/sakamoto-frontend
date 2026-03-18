@@ -13,6 +13,8 @@ import { getPlacesInventoryById } from '../../services/PlacesInventoryService';
 import { getAllItems } from '../../services/ItemService';
 import { createCountPlaces, deleteCountPlaces, getAllByPlaces } from '../../services/CountPlacesService';
 
+import { normalizarTexto } from '../../Funcoes/Utils';
+
 dayjs.extend(utc)
 
 const { useBreakpoint } = Grid
@@ -189,7 +191,7 @@ const ItemConfComponent = () => {
 
             res = items
                 .filter((item) =>
-                    item.descricao.toUpperCase().includes(value.toUpperCase())
+                    normalizarTexto(item.descricao).toUpperCase().includes(normalizarTexto(value).toUpperCase())
                 )
                 .map((item) => ({
                     // 'value' é o que preenche o input quando selecionado

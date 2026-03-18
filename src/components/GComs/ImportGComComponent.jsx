@@ -117,7 +117,7 @@ const ImportGComEstoqueComponent = () => {
     multiple: false, // Permitir apenas um arquivo    
     fileList, // 1. Limitar os tipos de arquivo (.xls.xlsx)
     listType: 'picture',
-    accept: '.xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // 2. Validação antes de enviar
+    accept: '.xls.xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // 2. Validação antes de enviar
 
     showUploadList: {
       extra: ({ size = 0 }) => (
